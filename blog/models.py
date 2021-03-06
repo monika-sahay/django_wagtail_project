@@ -19,6 +19,19 @@ class BlogPage(Page):
     intro = models.CharField(max_length=250)
     body = RichTextField(blank=True)
 
+    def get_context(self, request):
+        context = super().get_context(request)
+        blogpages = self.get_children().live().order_by('-first_published_at')
+        context['blogpages'] = blogpages
+        return context
+
+    def main_image(self):
+        gallery_item = self.gallery_images.first()
+        if gallery_item:
+            return gallery_item.image
+        else:
+            return None
+
     search_fields = Page.search_fields + [
         index.SearchField('intro'),
         index.SearchField('body'),
